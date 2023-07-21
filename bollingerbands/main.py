@@ -1,39 +1,11 @@
-# coding: utf-8
-
-# In[1]:
-
-# bollinger bands is a simple indicator
-# just moving average plus moving standard deviation
-# but pattern recognition is a differenct case
-# visualization is easy for human to identify the pattern
-# but for the machines, we gotta find a different approach
-# when we talk about pattern recognition these days
-# people always respond with machine learning
-# why machine learning when u can use arithmetic approach
-# which is much faster and simpler?
-
-# there are many patterns for recognition
-# top m, bottom w, head-shoulder top, head-shoulder bottom, elliott waves
-# in this content, we only discuss bottom w
-# top m is just the reverse of bottom w
-# rules of bollinger bands and bottom w can be found in the following link:
-# https://www.tradingview.com/wiki/Bollinger_Bands_(BB)
-
 import pandas as pd
 import plotly.graph_objects as go
 import copy
 import numpy as np
 import streamlit as st
+import yfinance as yf
 
-
-# In[2]:
-
-# In[3]:
-
-
-# first step is to calculate moving average and moving standard deviation
-# we plus/minus two standard deviations on moving average
-# we get our upper, mid, lower bands
+#Calculates bollinger bands 
 def bollinger_bands(df):
     data = copy.deepcopy(df)
     data["std"] = data["price"].rolling(window=20, min_periods=20).std()
@@ -43,66 +15,31 @@ def bollinger_bands(df):
 
     return data
 
+# the W is created with 5 nodes (l, k, j, m, i) (order they are found below)
+# there are four conditions that indicate a double bottom 
+# condition 1: 
+# condition 2: 
+# condition 3: 
+# condition 4: 
 
-# In[4]:
-
-
-# the signal generation is a bit tricky
-# there are four conditions to satisfy
-# for the shape of w, there are five nodes
-# from left to right, top to bottom, l,k,j,m,i
-# when we generate signals
-# the iteration node is the top right node i, condition 4
-# first, we find the middle node j, condition 2
-# next, we identify the first bottom node k, condition 1
-# after that, we point out the first top node l
-# l is not any of those four conditions
-# we just use it for pattern visualization
-# finally, we locate the second bottom node m, condition 3
-# plz refer to the following link for my poor visualization
-# https://github.com/je-suis-tm/quant-trading/blob/master/preview/bollinger%20bands%20bottom%20w%20pattern.png
 def signal_generation(data, method):
-    # according to investopedia
-    # for a double bottom pattern
-    # we should use 3-month horizon which is 75
     period = 75
 
-    # alpha denotes the difference between price and bollinger bands
-    # if alpha is too small, its unlikely to trigger a signal
-    # if alpha is too large, its too easy to trigger a signal
-    # which gives us a higher probability to lose money
-    # beta denotes the scale of bandwidth
-    # when bandwidth is larger than beta, it is expansion period
-    # when bandwidth is smaller than beta, it is contraction period
-    alpha = 0.0001
-    beta = 0.0001
+    alpha = 0.03 # difference between the price and the bands (also directly correlated to how often trades trigger)
+    beta = 0.03 # beta is used to measure the bandwidth 
 
-    df = method(data)
-    df["signals"] = 0
+    df = method(data) #adding the bands to the df 
+    df["signals"] = 0 #when trades are happening
 
-    # as usual, cumsum denotes the holding position
-    # coordinates store five nodes of w shape
-    # later we would use these coordinates to draw a w shape
-    df["cumsum"] = 0
-    df["coordinates"] = ""
+    df["cumsum"] = 0 #holding position
+    df["coordinates"] = "" #to draw the double bottom on the graph
 
     for i in range(period, len(df)):
-        # moveon is a process control
-        # if moveon==true, we move on to verify the next condition
-        # if false, we move on to the next iteration
-        # threshold denotes the value of node k
-        # we would use it for the comparison with node m
-        # plz refer to condition 3
         moveon = False
-        threshold = 0.0
+        threshold = 0.0 #value of the k node
 
-        # bottom w pattern recognition
-        # there is another signal generation method called walking the bands
-        # i personally think its too late for following the trend
-        # after confirmation of several breakthroughs
-        # maybe its good for stop and reverse
-        # condition 4
-        if (df["price"][i] > df["upper band"][i]) and (df["cumsum"][i] == 0):
+        #condition 4
+        if (df["price"][i] > df["upper band"][i]) and (df["cumsum"][i] == 0): 
             for j in range(i, i - period, -1):
                 # condition 2
                 if (np.abs(df["mid band"][j] - df["price"][j]) < alpha) and (
@@ -123,7 +60,7 @@ def signal_generation(data, method):
             if moveon == True:
                 moveon = False
                 for l in range(k, i - period, -1):
-                    # this one is for plotting w shape
+                    # this one is for plotting W shape
                     if df["mid band"][l] < df["price"][l]:
                         moveon = True
                         break
@@ -143,15 +80,7 @@ def signal_generation(data, method):
                         moveon = True
                         break
 
-        # clear our positions when there is contraction on bollinger bands
-        # contraction on the bandwidth is easy to understand
-        # when price momentum exists, the price would move dramatically for either direction
-        # which greatly increases the standard deviation
-        # when the momentum vanishes, we clear our positions
-
-        # note that we put moveon in the condition
-        # just in case our signal generation time is contraction period
-        # but we dont wanna clear positions right now
+        # sell our position when there is contraction on bollinger bands (indicating momentum ending)
         if (df["cumsum"][i] != 0) and (df["std"][i] < beta) and (moveon == False):
             df.at[i, "signals"] = -1
             df["cumsum"] = df["signals"].cumsum()
@@ -161,91 +90,124 @@ def signal_generation(data, method):
 
 # In[5]:
 
+#visualization
+def plot(data):
+    trades = list(data[data["signals"] != 0].iloc[:].index)
+    # no trades were found
+    if len(trades) < 2: 
+        st.write("No viable trades found")
+    else:
+        #create different graphs for each trade
+        options = {i for i in range(1,len(trades)//2+1)}
+        trade = st.selectbox("Which trade would you like to see?", options)
+        if trade is not None:
 
-def plot(new):
-    a, b = list(new[new["signals"] != 0].iloc[:2].index)
+            a,b = trades[(trade - 1) * 2:trade * 2]
+            tplot = data[a - 85 : b + 30] #range for clear graph
+            tplot.set_index(
+                pd.to_datetime(tplot["date"], format="%Y-%m-%d %H:%M"), inplace=True
+            )
 
-    newbie = new[a - 85 : b + 30]
-    newbie.set_index(
-        pd.to_datetime(newbie["date"], format="%Y-%m-%d %H:%M"), inplace=True
-    )
+            fig = go.Figure()
 
-    fig = go.Figure()
+            #plot stock price
+            fig.add_trace(
+                go.Scatter(x=tplot.index, y=tplot["price"], mode="lines", name="price")
+            )
 
-    fig.add_trace(
-        go.Scatter(x=newbie.index, y=newbie["price"], mode="lines", name="price")
-    )
+            #plot upper band
+            fig.add_trace(
+                go.Scatter(
+                    x=tplot.index,
+                    y=tplot["upper band"],
+                    fill=None,
+                    mode="lines",
+                    name="upper band",
+                )
+            )
 
-    fig.add_trace(
-        go.Scatter(
-            x=newbie.index,
-            y=newbie["upper band"],
-            fill=None,
-            mode="lines",
-            name="upper band",
-        )
-    )
+            #plot lower band
+            fig.add_trace(
+                go.Scatter(
+                    x=tplot.index,
+                    y=tplot["lower band"],
+                    fill="tonexty",
+                    mode="lines",
+                    name="lower band",
+                )
+            )
 
-    fig.add_trace(
-        go.Scatter(
-            x=newbie.index,
-            y=newbie["lower band"],
-            fill="tonexty",
-            mode="lines",
-            name="lower band",
-        )
-    )
+            #plot middle band
+            fig.add_trace(
+                go.Scatter(
+                    x=tplot.index, y=tplot["mid band"], mode="lines", name="moving average"
+                )
+            )
 
-    fig.add_trace(
-        go.Scatter(
-            x=newbie.index, y=newbie["mid band"], mode="lines", name="moving average"
-        )
-    )
+            #plot long position
+            fig.add_trace(
+                go.Scatter(
+                    x=tplot[tplot["signals"] == 1].index,
+                    y=tplot["price"][tplot["signals"] == 1],
+                    mode="markers",
+                    marker_symbol="triangle-up",
+                    marker=dict(
+                        color='green'
+                    ),
+                    name="LONG",
+                )
+            )
 
-    fig.add_trace(
-        go.Scatter(
-            x=newbie[newbie["signals"] == 1].index,
-            y=newbie["price"][newbie["signals"] == 1],
-            mode="markers",
-            marker_symbol="triangle-up",
-            name="LONG",
-        )
-    )
+            #plot short position
+            fig.add_trace(
+                go.Scatter(
+                    x=tplot[tplot["signals"] == -1].index,
+                    y=tplot["price"][tplot["signals"] == -1],
+                    mode="markers",
+                    marker_symbol="triangle-down",
+                    marker=dict(
+                        color='green'
+                    ),
+                    name="SHORT",
+                )
+            )
 
-    fig.add_trace(
-        go.Scatter(
-            x=newbie[newbie["signals"] == -1].index,
-            y=newbie["price"][newbie["signals"] == -1],
-            mode="markers",
-            marker_symbol="triangle-down",
-            name="SHORT",
-        )
-    )
+            #plot W pattern
+            temp = tplot["coordinates"][tplot["signals"] == 1]
+            indexlist = list(map(int, temp[temp.index[0]].split(",")))
 
-    temp = newbie["coordinates"][newbie["signals"] == 1]
-    indexlist = list(map(int, temp[temp.index[0]].split(",")))
+            fig.add_trace(
+                go.Scatter(
+                    x=tplot["price"][pd.to_datetime(data["date"].iloc[indexlist])].index,
+                    y=tplot["price"][pd.to_datetime(data["date"].iloc[indexlist])],
+                    mode="lines",
+                    name="double bottom pattern",
+                )
+            )
 
-    fig.add_trace(
-        go.Scatter(
-            x=newbie["price"][pd.to_datetime(new["date"].iloc[indexlist])].index,
-            y=newbie["price"][pd.to_datetime(new["date"].iloc[indexlist])],
-            mode="lines",
-            name="double bottom pattern",
-        )
-    )
+            fig.update_layout(title=f"Bollinger Bands Trade {trade}", yaxis_title="Price", xaxis_title="Time")
 
-    fig.update_layout(title="Bollinger Bands Pattern Recognition", yaxis_title="price")
+            st.plotly_chart(fig, use_container_width=True)
 
-    st.plotly_chart(fig)
+   
+    
 
 
-# In[6]:
 
-# ta-da
-df = pd.read_csv("gbpusd.csv")
+#frontend
+st.title("Bollinger Bands Double Bottom Backtesting")
 
-signals = signal_generation(df, bollinger_bands)
-st.write(signals)
+#data ingestion
+ticker = st.text_input("Which stock do you want to analyze?").upper()
+days = st.slider("How many days of data take into account?", 1, 7, 1)
 
-new = copy.deepcopy(signals)
-plot(new)
+if len(ticker) > 0:
+    df = yf.download(ticker, period=f'{days}d', interval='1m')
+    df.reset_index(inplace=True)
+    data = df[['Datetime', 'Close']]
+    data = data.rename(columns={"Datetime": "date", "Close": "price"})
+    signals = signal_generation(data, bollinger_bands)
+    st.write(signals)
+    plot(signals)
+
+                   
