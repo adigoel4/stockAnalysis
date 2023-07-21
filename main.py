@@ -1,8 +1,24 @@
 import streamlit as st
+import yfinance as yf
 import pandas as pd
-from sklearn.metrics.pairwise import cosine_similarity
-import matplotlib.pyplot as plt
 
+# import numpy as np
+import datetime
+import matplotlib.pyplot as plt
+import model
+
+from sklearn.metrics.pairwise import cosine_similarity
+
+# from finta import TA
+# from sklearn import svm
+# from sklearn.ensemble import RandomForestClassifier
+# from sklearn.neighbors import KNeighborsClassifier
+# from sklearn.ensemble import AdaBoostClassifier
+# from sklearn.ensemble import GradientBoostingClassifier
+# from sklearn.ensemble import VotingClassifier
+# from sklearn.model_selection import train_test_split, GridSearchCV
+# from sklearn.metrics import confusion_matrix, classification_report
+# from sklearn import metrics
 
 # CSS
 st.markdown(
@@ -42,48 +58,28 @@ def create_null_series(length):
 
 
 def adjust_dataframe(df_past, df, adjust_index):
-    return df_past * (df["Close"].iloc[adjust_index:][0] / df_past[0])
+    return df_past * (df["close"].iloc[adjust_index:][0] / df_past[0])
 
 
+# title
 st.title("Historical Stock Data Analysis")
 
-uploaded_file = st.file_uploader(
-    "Upload stock quotes *.csv",
-    type=["csv"],
-    help="The file has to have at least a Date column and a Close column. Stock quotes should be sorted from oldest to newest. ",
-)
-
-if st.checkbox("Use example file"):
-    uploaded_file = "gs_us_d.csv"
-
+ticker = st.text_input("Which stock do you want to analyze?").upper()
 years = st.slider("How many years of data take into account?", 1, 20, 20)
 
-# with st.sidebar:
-#     st.write("**Welcome!**")
-#     st.write(
-#         "This app allows you to compare the last 2 weeks of closing prices to all historical data. Getting data is simple. Find a stock on Yahoo Finance, click Historical Data, and download up to 20 years of historical data. Alternatively, you can also use the sample data file:"
-#     )
+NUM_DAYS = years * 365
 
-if uploaded_file is not None:
+start = datetime.date.today() - datetime.timedelta(NUM_DAYS)
+end = datetime.datetime.today()
+
+if len(ticker) > 0:
     n_window = 14
+    df = yf.download(ticker, start, end)
 
-    df = pd.read_csv(uploaded_file)
+    data = model.predictions(df.copy())
 
-    if "Data" in df.columns:
-        df.rename(columns={"Data": "Date"}, inplace=True)
-    if "Zamkniecie" in df.columns:
-        df.rename(columns={"Zamkniecie": "Close"}, inplace=True)
-    if "Najwyzszy" in df.columns:
-        df.rename(columns={"Najwyzszy": "Max"}, inplace=True)
-    if "Najnizszy" in df.columns:
-        df.rename(columns={"Najnizszy": "Min"}, inplace=True)
-    if "Wolumen" in df.columns:
-        df.rename(columns={"Wolumen": "Volume"}, inplace=True)
-
+    df.reset_index(inplace=True)
     df = df.set_index("Date")
-
-    # headlines = pd.read_csv("headlines.csv")
-
     df = df[-years * 365 :]
     rolling_window = df["Close"].rolling(window=n_window)
 
