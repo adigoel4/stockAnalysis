@@ -32,3 +32,7 @@ Contains Python code for backtesting the Bollinger Bands Double Bottom trading s
 5. The interactive plot shows the stock price, Bollinger Bands, and trade entry/exit points based on the identified "bottom w" patterns.
 
 Please ensure that you have the required libraries (`pandas`, `plotly`, `numpy`, `streamlit`, and `yfinance`) installed before running the code.
+
+Example: 
+![CleanShot 2023-07-21 at 14 43 12@2x](https://github.com/adigoel4/stockAnalysis/assets/115904374/cc8573de-fd73-4973-bf56-e618227993a5)
+
