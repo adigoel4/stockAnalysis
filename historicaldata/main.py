@@ -2,23 +2,11 @@ import streamlit as st
 import yfinance as yf
 import pandas as pd
 
-# import numpy as np
 import datetime
 import matplotlib.pyplot as plt
 import model
 
 from sklearn.metrics.pairwise import cosine_similarity
-
-# from finta import TA
-# from sklearn import svm
-# from sklearn.ensemble import RandomForestClassifier
-# from sklearn.neighbors import KNeighborsClassifier
-# from sklearn.ensemble import AdaBoostClassifier
-# from sklearn.ensemble import GradientBoostingClassifier
-# from sklearn.ensemble import VotingClassifier
-# from sklearn.model_selection import train_test_split, GridSearchCV
-# from sklearn.metrics import confusion_matrix, classification_report
-# from sklearn import metrics
 
 # CSS
 st.markdown(
@@ -58,7 +46,7 @@ def create_null_series(length):
 
 
 def adjust_dataframe(df_past, df, adjust_index):
-    return df_past * (df["close"].iloc[adjust_index:][0] / df_past[0])
+    return df_past * (df["Close"].iloc[adjust_index:][0] / df_past[0])
 
 
 # title

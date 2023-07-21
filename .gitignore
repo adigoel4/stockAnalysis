@@ -1,2 +1,4 @@
-/env
-/.vscode/settings.json
+historicaldata/env
+bollingerbands/env
+historicaldata/.vscode/settings.json
+historicaldata/test.py
