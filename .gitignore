@@ -1,4 +1,5 @@
 historicaldata/env
 bollingerbands/env
-historicaldata/.vscode/settings.json
+.vscode/
 historicaldata/test.py
+historicaldata/_pycache_
