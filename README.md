@@ -1,11 +1,50 @@
 # Stock Analysis 
 
-## Historical Data 
-* Using yfinance, gets historical stock data of any inputed ticker
-* Looks at most recent 14 day period and finds the most similar 14 day periods in the last twenty years
-* Shows headlines of those similar periods to help identify patterns and trends
-* Scale past periods to compare to most recent period
-* Built using Streamlit for modern UI and clear visualizations of data
+## Historical Data
+
+This Python code enables the analysis of historical stock data using the `streamlit`, `yfinance`, `pandas`, `datetime`, `matplotlib`, `model`, and `cosine_similarity` libraries. The code allows users to input a stock symbol (ticker) and select the number of years of historical data they want to analyze.
+
+### Features
+
+- **Cosine Similarity Analysis:** The code calculates the cosine similarity score between the last 14 days of the stock's closing prices and 21-day windows of past data. This helps identify similar price patterns in the historical data.
+
+- **Interactive Visualization:** The code provides interactive visualizations using `plotly.graph_objects` and `streamlit`. Users can select specific trades to view the price series, Bollinger Bands, and the identified "bottom w" patterns.
+
+- **Adjustable Scaling:** Users can adjust the scaling of historical data to align it with the current price levels, enabling a more accurate visual comparison.
+
+- **Top Similar Historical Periods:** Users can explore the top 10 most similar historical periods, comparing the price patterns and similarity scores.
+
+### Implementation Details
+
+1. **Computing Similarity Score:**
+   The code defines a function `compute_similarity(window)` to calculate the cosine similarity score between the last 14 days of the stock's closing prices and 21-day windows of past data. The similarity score is used to identify similar patterns in the stock's historical data.
+
+2. **Plotting Dataframes:**
+   The function `plot_dataframes(df1, df2)` generates a plot comparing the closing prices of the last 14 days with those of a similar case from the past, showcasing the stock's price similarity.
+
+3. **Adjusting Dataframes:**
+   The function `adjust_dataframe(df_past, df, adjust_index)` adjusts past dataframes to align them with the current price levels, allowing better comparison between different time periods.
+
+### How to Use
+
+1. Enter the stock symbol (ticker) you want to analyze in the input box.
+2. Choose the number of years of historical data you want to use for analysis using the slider.
+3. The code will download the historical stock data using `yfinance` and analyze the similarity of price patterns between the last 14 days and 21-day windows from the past.
+4. The code will present the top 10 most similar historical periods, allowing users to examine the similarity scores and visualize the price patterns for each case.
+5. Users can adjust the scaling of the data for a better visual comparison.
+6. The interactive plots will display the closing prices for the last 14 days and the selected historical periods, helping users assess the stock's price similarity.
+
+### Requirements
+
+Ensure you have the following libraries installed before running the code:
+
+- streamlit
+- yfinance
+- pandas
+- datetime
+- matplotlib
+- model
+- cosine_similarity
 
 ## Bollinger Bands
 
@@ -31,8 +70,11 @@ Contains Python code for backtesting the Bollinger Bands Double Bottom trading s
 4. Select which trade you would like to visualize
 5. The interactive plot shows the stock price, Bollinger Bands, and trade entry/exit points based on the identified "bottom w" patterns.
 
-Please ensure that you have the required libraries (`pandas`, `plotly`, `numpy`, `streamlit`, and `yfinance`) installed before running the code.
-
 Example: 
 ![CleanShot 2023-07-21 at 14 43 12@2x](https://github.com/adigoel4/stockAnalysis/assets/115904374/cc8573de-fd73-4973-bf56-e618227993a5)
+
+## Disclaimer
+
+This code is intended for educational and informational purposes only and does not constitute financial advice. Users should exercise caution when making investment decisions based on the results. Always consult with a qualified financial advisor before making any investment. The code's ability to identify similarities in historical data does not guarantee future stock performance. Use the code at your own risk.
+
 
