@@ -8,7 +8,7 @@ This Python code enables the analysis of historical stock data using the `stream
 
 - **Cosine Similarity Analysis:** The code calculates the cosine similarity score between the last 14 days of the stock's closing prices and 21-day windows of past data. This helps identify similar price patterns in the historical data.
 
-- **Interactive Visualization:** The code provides interactive visualizations using `matplotlib`
+- **Interactive Visualization:** The code provides interactive visualizations using `matplotlib`.
 
 - **Adjustable Scaling:** Users can adjust the scaling of historical data to align it with the current price levels, enabling a more accurate visual comparison.
 
