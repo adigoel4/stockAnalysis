@@ -38,6 +38,16 @@ This Python code enables the analysis of historical stock data using the `stream
 
 Contains Python code for backtesting the Bollinger Bands Double Bottom trading strategy using the `pandas`, `plotly.graph_objects`, `numpy`, `streamlit`, and `yfinance` libraries. The code aims to identify bullish "bottom w" patterns and generate buy (LONG) or sell (SHORT) signals based on specific conditions.
 
+### Features
+
+- **Bollinger Bands Calculation:** The code calculates Bollinger Bands for a given stock's price series, providing valuable information about price volatility and potential trading opportunities.
+
+- **Double Bottom Pattern Recognition:** The code identifies "bottom w" patterns, a potential bullish reversal pattern, by evaluating specific conditions around the Bollinger Bands and the Simple Moving Average.
+
+- **Buy/Sell Signal Generation:** Based on the identified "bottom w" patterns, the code generates buy (LONG) or sell (SHORT) signals to assist traders in making informed trading decisions.
+
+- **Interactive Visualization:** The code offers interactive plot visualization using `plotly.graph_objects` and `streamlit`, allowing users to explore individual trades and their corresponding patterns and signals.
+
 ### Implementation Details
 
 1. **Bollinger Bands Calculation**: The code defines a function `bollinger_bands(df)` that calculates the Bollinger Bands (middle band, upper band, lower band) for a given price series using a 20-period rolling window and standard deviation.
