@@ -37,7 +37,7 @@ This Python code enables the analysis of historical stock data using the `stream
 Example:
 ![CleanShot 2023-07-22 at 00 39 24@2x](https://github.com/adigoel4/stockAnalysis/assets/115904374/44abf41d-15ca-42ae-83ef-7cb291445573)
 
- Bollinger Bands
+## Bollinger Bands
 
 Contains Python code for backtesting the Bollinger Bands Double Bottom trading strategy using the `pandas`, `plotly.graph_objects`, `numpy`, `streamlit`, and `yfinance` libraries. The code aims to identify bullish "bottom w" patterns and generate buy (LONG) or sell (SHORT) signals based on specific conditions.
 
