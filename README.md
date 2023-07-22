@@ -35,7 +35,8 @@ This Python code enables the analysis of historical stock data using the `stream
 6. The interactive plots will display the closing prices for the last 14 days and the selected historical periods, helping users assess the stock's price similarity.
 
 Example:
-![CleanShot 2023-07-22 at 00 39 24@2x](https://github.com/adigoel4/stockAnalysis/assets/115904374/44abf41d-15ca-42ae-83ef-7cb291445573)
+![CleanShot 2023-07-22 at 00 39 24@2x](https://github.com/adigoel4/stockAnalysis/assets/115904374/096ca8c1-fe4c-4496-a702-b8a088f19994)
+
 
 ## Bollinger Bands
 
