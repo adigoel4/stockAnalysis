@@ -17,10 +17,11 @@ def bollinger_bands(df):
 
 # the W is created with 5 nodes (l, k, j, m, i) (order they are found below)
 # there are four conditions that indicate a double bottom 
-# condition 1: 
-# condition 2: 
-# condition 3: 
-# condition 4: 
+
+# condition 1: reaction low near Lower Band or breaks it.
+# condition 2: price moves around SMA (middle band).
+# condition 3: lower low forms without breaking Lower Band
+# condition 4: strong move towards SMA, possible breakout
 
 def signal_generation(data, method):
     period = 75
