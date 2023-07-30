@@ -37,6 +37,8 @@ This Python code enables the analysis of historical stock data using the `stream
 Example:
 ![CleanShot 2023-07-22 at 00 39 24@2x](https://github.com/adigoel4/stockAnalysis/assets/115904374/096ca8c1-fe4c-4496-a702-b8a088f19994)
 
+![CleanShot 2023-07-29 at 22 57 35@2x](https://github.com/adigoel4/stockAnalysis/assets/115904374/92d74954-5258-429b-88c8-7f308e74b733)
+
 
 ## Bollinger Bands
 
